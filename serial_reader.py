@@ -8,8 +8,9 @@ class SerialReader:
     def __init__(self, serialPort, baud, timeout):
         self.serialPort = serialPort
         self.baud = baud
+        self.data = {}
         self.lock = threading.Lock()
-        self.dataReader = threading.Thread(self.serialReader)
+        self.dataReader = threading.Thread(target=self.serialReader)
         self.dataReader.start()
         
     def getJSONField(self, field, subfield):
