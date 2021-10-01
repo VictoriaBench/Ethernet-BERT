@@ -22,7 +22,7 @@ class DataGenerator:
         return self
 
     def __next__(self):
-        if self.packetsGenerated <= self.numPackets:
+        if self.numPackets is None or self.packetsGenerated <= self.numPackets:
 
             result = bytearray(self.buffer.read(self.packetSize))
             result[:12] = self.nextID.to_bytes(4, byteorder=sys.byteorder)*3
@@ -38,7 +38,7 @@ class DataGenerator:
     def generatePacketFromID(self, id:int):
         if self.packetSize == 0:
             return b''
-        rand = random.Random(id % self.numPackets)
+        rand = random.Random(id % self.bufferSize)
         zero = 0
         header = zero.to_bytes(4, byteorder=sys.byteorder ) * 3
         integer = rand.getrandbits((self.packetSize - 12) * 8)

@@ -10,5 +10,4 @@ def findErrors(data, expected):
             if db is not eb:
                 errors+=1
             count+=1
-    
     return count, errors
