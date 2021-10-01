@@ -3,16 +3,12 @@ from time import sleep, time
 import config
 from data_generator import DataGenerator, decodePacket
 from bert import findErrors
-
+import traceback
 
 
 with socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(config.ETH_P_ALL)) as raw_socket:
     raw_socket.bind((config.INTERFACE, 0))
     count = 0 
-    raw_socket.settimeout(1)
-    timer = 0
-    start = False
-    received_ids = set()
     expected_data_generator = DataGenerator(config.ETH_FRAME_LEN, config.NUM_PACKETS)
     
     while True:
@@ -21,9 +17,9 @@ with socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(config.ETH_P_
             id, data = decodePacket(data_raw)
             expected_data = expected_data_generator.getPacketFromID(id)      
             count, errors = findErrors(data_raw, expected_data)
-            print(errors, count)
-        except:
-            pass
+        except Exception:
+            print(traceback.format_exc())
+            
           
 
 
