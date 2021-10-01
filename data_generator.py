@@ -11,6 +11,7 @@ class DataGenerator:
         self.showTime = showTime
         self.bufferSize = bufferSize
         self.buffer = io.BytesIO()
+        print("Generating buffer...")
         for i in range(self.bufferSize):
             self.buffer.write(self.generatePacketFromID(i))
         self.buffer.seek(0)
@@ -23,7 +24,6 @@ class DataGenerator:
 
     def __next__(self):
         if self.numPackets is None or self.packetsGenerated <= self.numPackets:
-
             result = bytearray(self.buffer.read(self.packetSize))
             result[:12] = self.nextID.to_bytes(4, byteorder=sys.byteorder)*3
             self.nextID += 1
@@ -49,7 +49,7 @@ class DataGenerator:
         prev = self.buffer.tell()
         self.buffer.seek((id % self.bufferSize)* self.packetSize)
         result = bytearray(self.buffer.read(self.packetSize))
-        result[:12] = self.nextID.to_bytes(4, byteorder=sys.byteorder)*3
+        result[:12] = id.to_bytes(4, byteorder=sys.byteorder)*3
         self.buffer.seek(prev)
         return result
 
