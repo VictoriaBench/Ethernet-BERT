@@ -8,28 +8,31 @@ class SerialReader:
     def __init__(self, serialPort, baud, timeout):
         self.serialPort = serialPort
         self.baud = baud
-        self.data = {}
+        self.data = None
+        self.done = False
         self.lock = threading.Lock()
         self.dataReader = threading.Thread(target=self.serialReader)
         self.dataReader.start()
         
     def getJSONField(self, field, subfield):
         with self.lock:
-            if subfield: 
-                return self.data[field][subfield]
-            else:
-                return self.data[field]
-
+            if not self.data: return None
+            if field not in self.data.keys(): return None
+            return self.data[field][subfield]
+         
+    def stop(self):
+        self.done = True
+        
     def serialReader(self):
         with serial.Serial(self.serialPort, self.baud) as ser:
+            print(f"Connected to serial port: {self.serialPort}")
             ser.write(b"RAW\r\n")
-            while True:
+            while not self.done:
                 ser_bytes = ser.readline() 
-                try:    
-                    with self.lock:
-                        self.data =json.loads(ser_bytes)
-                except:
-                    continue
+                with self.lock:
+                    try:
+                        self.data = json.loads(ser_bytes)
+                    except: pass         
                 # rxpower = sfpData["sfp0"]["RXuW"]
                 # rxpowerDB = 10 * math.log(rxpower * 0.001,10)
 

@@ -14,7 +14,7 @@ class DataGenerator:
         print("Generating buffer...")
         for i in range(self.bufferSize):
             self.buffer.write(self.generatePacketFromID(i))
-
+        print("Done Generating")
    
     def __iter__(self):
         self.buffer.seek(0) 
